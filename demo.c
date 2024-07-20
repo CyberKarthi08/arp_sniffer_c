@@ -1,17 +1,15 @@
 #include <stdio.h>
-
-// Function to calculate factorial using iterative approach
-unsigned long long factorial(int n) {
-    unsigned long long result = 1;
-    for (int i = 1; i <= n; ++i) {
-        result *= i;
-    }
-    return result;
-}
+#include <unistd.h>  // for POSIX system calls
 
 int main() {
-    int num = 10;
-    unsigned long long fact = factorial(num);
-    printf("Factorial of %d is %llu\n", num, fact);
+    char buffer[256];
+    ssize_t bytes_read;
+
+    // Example of a system call (read) to read input from stdin
+    bytes_read = read(STDIN_FILENO, buffer, sizeof(buffer));
+
+    // Example of a system call (write) to write output to stdout
+    write(STDOUT_FILENO, buffer, bytes_read);
+
     return 0;
 }
