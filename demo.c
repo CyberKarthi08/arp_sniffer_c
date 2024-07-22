@@ -1,15 +1,11 @@
 #include <stdio.h>
-#include <unistd.h>  // for POSIX system calls
 
-int main() {
-    char buffer[256];
-    ssize_t bytes_read;
+#define ADMIN_NAME "Cyber_Karthi08"
+#define VERSION 1.1
 
-    // Example of a system call (read) to read input from stdin
-    bytes_read = read(STDIN_FILENO, buffer, sizeof(buffer));
+int main(){
 
-    // Example of a system call (write) to write output to stdout
-    write(STDOUT_FILENO, buffer, bytes_read);
+    printf("The Termi Admin Name : %s & Version : %f \n", ADMIN_NAME,VERSION );
 
     return 0;
 }
