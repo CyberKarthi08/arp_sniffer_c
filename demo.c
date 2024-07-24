@@ -13,9 +13,6 @@
 int main(){
 
     printf("The Termi Admin Name : %s & Version : %f \n", ADMIN_NAME,VERSION );
-    printf("----------------------------------------------\n");
-    HAS_REVERSIBLE_CC_MODE = 1;
-    printf("value: %d", HAS_REVERSIBLE_CC_MODE);
 
 
 
