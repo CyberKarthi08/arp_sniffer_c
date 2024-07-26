@@ -11,8 +11,8 @@
 #endif
 
 int main(){
-
-    printf("The Termi Admin Name : %s & Version : %f \n", ADMIN_NAME,VERSION );
+    const int hacker = 01;
+    printf("The Termi Admin Name : %s & Version : %f & H.ID : %d \n", ADMIN_NAME,VERSION, hacker );
 
 
 
