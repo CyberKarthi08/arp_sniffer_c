@@ -14,6 +14,4 @@ int main(){
     const int hacker = 01;
     printf("The Termi Admin Name : %s & Version : %f & H.ID : %d \n", ADMIN_NAME,VERSION, hacker );
 
-
-
 }
