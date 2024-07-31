@@ -7,7 +7,7 @@
 #ifdef REVERSIBLE_CC_MODE
 #define HAS_REVERSIBLE_CC_MODE 1
 #else
-#define HAS_REVERSIBLE_CC_MODE 0
+#define NOTHING 0
 #endif
 
 int main(){
