@@ -12,7 +12,6 @@ int main() {
         perror("open");
         return 1;
     }
-
     struct stat statbuf;
     if (fstat(fd, &statbuf) == -1) {
         perror("fstat");
