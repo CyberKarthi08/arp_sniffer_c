@@ -60,7 +60,7 @@ void print_version(){
 	printf(" ___/ / /|  // // __/ / __/ / /___/ _, _/ \n");
 	printf("/____/_/_|_/___/_/ __/_/   /_____/_/ |_|  \n");
 
-	printf("\nLAHTP ARP Spoof Detector v0.1\n");
+	printf("\nARP Sniff Detector v0.1\n");
 	printf("\nThis tool will sniff for ARP packets in the interface and can possibly detect if there is an ongoing ARP spoofing attack. This tool is still in a beta stage. \n");
 }
 
