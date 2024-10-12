@@ -9,8 +9,8 @@
 #include <time.h>
 #include <netinet/if_ether.h> 
 #include <unistd.h>
-//#include <libnotify/notify.h>
-// Important
+// #include <libnotify/notify.h>
+
 
 #define ARP_REQUEST 1	//ARP Request
 #define ARP_RESPONSE 2	//ARP Response
@@ -27,69 +27,39 @@ struct _arp_hdr {
   uint8_t target_ip[4];		//Target IP address
 };
 
-
-void alert_spoof(char *ip, char *mac){
-	printf("\nAlert: Possible ARP Spoofing Detected. IP: %s and MAC: %s\n", ip, mac);
-} 
-
 int print_available_interfaces(){
 	char error[PCAP_ERRBUF_SIZE];
 	pcap_if_t *interfaces, *temp;
 	int i = 0;
 	
 	if(pcap_findalldevs(&interfaces, error) == -1){
-		printf("Cannot acquire the devices\n");
-		return -1;
+		printf("[!] Cannot acquire the devices\n");
+		return-1;
 	}
 	
-	printf("The available interfaces are: \n");
-	for(temp = interfaces; temp; temp=temp->next){
-		printf("#%d: %s\n", ++i, temp->name);
+	printf("[-] The available interfaces are: \n");
+	for(temp = interfaces; temp; temp=temp->next, ++i){
+		printf("[+] %s\n",temp->name);
 	}
 	return 0;
 }
 
-void print_version(){
-	printf("    ____   _____  _____             \n");
-	printf("   /   |  / __ \\/ __ \\                    \n");
-	printf("  / /| | / /_/ / /_/ /                    \n");
-	printf(" / ___ |/ _, _/ ____/                     \n");
-	printf("/_/__|_/_/ |_/_/_________________________ \n");
-	printf("  / ___// | / /  _/ ____/ ____/ ____/ __ \\ \n");
-	printf("  \\__ \\/  |/ // // /_  / /_  / __/ / /_/ /\n");
-	printf(" ___/ / /|  // // __/ / __/ / /___/ _, _/ \n");
-	printf("/____/_/_|_/___/_/ __/_/   /_____/_/ |_|  \n");
-
-	printf("\nARP Sniff Detector v0.1\n");
-	printf("\nThis tool will sniff for ARP packets in the interface and can possibly detect if there is an ongoing ARP spoofing attack. This tool is still in a beta stage. \n");
-}
-
-void print_help(char *bin){
-
-	printf("\nAvailable arguments: \n");
-	printf("----------------------------------------------------------\n");
-	printf("-h or --help:\t\t\tPrint this help text.\n");
-	printf("-l or --lookup:\t\t\tPrint the available interfaces.\n");
-	printf("-i or --interface:\t\tProvide the interface to sniff on.\n");
-	printf("-v or --version:\t\tPrint the version information.\n");
-	printf("----------------------------------------------------------\n");
-	printf("\nUsage: %s -i <interface> [You can look for the available interfaces using -l/--lookup]\n", bin);
-	exit(1);
-	
-}
-
-char* get_hardware_address(uint8_t mac[6]){
+char* get_hardware_addr(uint8_t mac[6]){
 	char *m = (char*)malloc(20*sizeof(char));
 		
 	sprintf(m, "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 	return m;
 }
 
-char* get_ip_address(uint8_t ip[4]){
+char* get_ip_addr(uint8_t ip[4]){
 	char *m = (char*)malloc(20*sizeof(char));
 	sprintf(m, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
 	return m;
 }
+
+void alert_spoof(char *ip, char *mac){
+	printf("\n[!] Alert: Possible ARP Spoofing Detected. IP: %s and MAC: %s\n", ip, mac);
+} 
 
 int sniff_arp(char *device_name){
 	char error[PCAP_ERRBUF_SIZE];
@@ -110,7 +80,7 @@ int sniff_arp(char *device_name){
 		print_available_interfaces();
 		return -1;
 	} else {
-		printf("Listening on %s...\n", device_name);
+		printf("\nListening on %s...\n\n", device_name);
 	}
 	while(1){
 		packet = pcap_next(pack_desc, &header);
@@ -127,20 +97,20 @@ int sniff_arp(char *device_name){
 					counter = 0;
 				}
 				arpheader = (arp_hdr*)(packet+14);
-				printf("\nReceived an ARP packet with length %d\n", header.len);
-				printf("Received at %s", ctime((const time_t*) &header.ts.tv_sec));
-				printf("Ethernet Header Length: %d\n", ETHER_HDR_LEN);
-				printf("Operation Type: %s\n", (ntohs(arpheader->opcode) == ARP_REQUEST) ? "ARP Request" : "ARP Response");
-				s_mac = get_hardware_address(arpheader->sender_mac);
-				s_ip = get_ip_address(arpheader->sender_ip);
-				t_mac = get_hardware_address(arpheader->target_mac);
-				t_ip = get_ip_address(arpheader->target_ip);
-				printf("Sender MAC: %s\n", s_mac);
-				printf("Sender IP: %s\n", s_ip);
-				printf("Target MAC: %s\n", t_mac);
-				printf("Target IP: %s\n", t_ip);
-				printf("--------------------------------------------------------------");
-				counter++;
+				printf("\n[+] Received an ARP packet with length %d\n", header.len);
+				printf("[+] Received at %s", ctime((const time_t*) &header.ts.tv_sec));
+				printf("[+] Ethernet Header Length: %d\n", ETHER_HDR_LEN);
+				printf("[+] Operation Type: %s\n", (ntohs(arpheader->opcode) == ARP_REQUEST) ? "ARP Request" : "ARP Response");
+				s_mac = get_hardware_addr(arpheader->sender_mac);
+				s_ip = get_ip_addr(arpheader->sender_ip);
+				t_mac = get_hardware_addr(arpheader->target_mac);
+				t_ip = get_ip_addr(arpheader->target_ip);
+				printf("\tSource MAC: %s\n", s_mac);
+				printf("\tSource IP: %s\n", s_ip);
+				printf("\tDestination MAC: %s\n", t_mac);
+				printf("\tDestination IP: %s\n\n", t_ip);
+				printf("<~>_<~>_<~>_<~>_<~>_<~>_<~>_<~>_<~>_<~>_<~>_<~>\n\n");     
+ 				counter++;
 				lt = time(NULL);
 				if(counter > 10){
 					alert_spoof(s_ip, s_mac);
@@ -152,12 +122,42 @@ int sniff_arp(char *device_name){
 	return 0;
 
 }
+   
+void print_version(){
+	printf("    ____   ____  ____             \n");
+	printf("   /   |  / __ \\/ __ \\                    \n");
+	printf("  / /| | / /_/ / /_/ /                    \n");
+	printf(" / ___ |/ _, _/ ____/                     \n");
+	printf("/_/__|_/_/ |_/_/_________________________ \n");
+	printf("  / ___// | / /  _/ ____/ ____/ ____/ __ \\ \n");
+	printf("  \\__ \\/  |/ // // /_  / /_  / __/ / /_/ /\n");
+	printf(" ___/ / /|  // // __/ / __/ / /___/ _, _/ \n");
+	printf("/____/_/_|_/___/_/ __/_/   /_____/_/ |_|    V1.0\n ");
+
+	printf("\nARP Sniff Detector\n");
+	printf("\nThis tool will sniff for ARP packets in the interface and can possibly detect if there is an ongoing ARP spoofing attack. This tool is still in a beta stage. \n");
+}
+
+void print_help(char *bin){
+
+	printf("\n[-] Available arguments: \n");
+	printf("----------------------------------------------------------\n");
+	printf("-h or --help:\t\t\tPrint this help text.\n");
+	printf("-l or --lookup:\t\t\tPrint the available interfaces.\n");
+	printf("-i or --interface:\t\tProvide the interface to sniff on.\n");
+	printf("-v or --version:\t\tPrint the version information.\n");
+	printf("----------------------------------------------------------\n");
+	printf("\n[+] Usage: %s -i <interface> [You can look for the available interfaces using -l/--lookup]\n", bin);
+	exit(1);
+	
+}
+
 
 int main(int argc, char *argv[]){
 
 	if(access("/usr/bin/notify-send", F_OK) == -1){
-		printf("Missing dependencies: libnotify-bin\n");
-		printf("Please run: sudo apt-get install libnotify-bin");
+		printf("[!] Missing dependencies: libnotify-bin\n");
+		printf("[+] Please run: sudo apt-get install libnotify-bin");
 		printf("\n");
 		print_version();
 		exit(-1);
@@ -173,28 +173,18 @@ int main(int argc, char *argv[]){
 		print_available_interfaces();
 	} else if(strcmp("-i", argv[1]) == 0 || strcmp("--interface", argv[1]) == 0){
 		if(argc < 3){
-			printf("Error: Please provide an interface to sniff on. Select from the following.\n");
+			printf("[!] Error: Please provide an interface to sniff on. Select from the following.\n");
 			printf("--------------------------------------------------------------------------\n");
 			print_available_interfaces();
-			printf("\nUsage: %s -i <interface> [You can look for the available interfaces using -l/--lookup]\n", argv[0]);
+			printf("\n[*] Usage: %s -i <interface> [You can look for the available interfaces using -l/--lookup]\n", argv[0]);
 		} else {
 			sniff_arp(argv[2]);
 		}
 			
 			
 	} else {
-		printf("Invalid argument.\n");
+		printf("[!] Invalid argument.\n");
 		print_help(argv[0]);
 	}
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-	
